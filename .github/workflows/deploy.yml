@@ -40,10 +40,10 @@ jobs:
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/projek-uas:latest
 
             echo "Stopping existing container (if any)..."
-            docker stop your-html-app-container || true
-            docker rm your-html-app-container || true
+            docker stop projek-uas || true
+            docker rm projek-uas || true
 
             echo "Running new container..."
-            docker run -d --name your-html-app-container -p 80:80 ${{ secrets.DOCKERHUB_USERNAME }}/your-html-app:latest
+            docker run -d --name projek-uas -p 80:80 ${{ secrets.DOCKERHUB_USERNAME }}/projek-uas:latest
 
             echo "Deployment complete!"
