@@ -44,6 +44,6 @@ jobs:
             docker rm projek-uas || true
 
             echo "Running new container..."
-            docker run -d --name projek-uas -p 80:80 ${{ secrets.DOCKERHUB_USERNAME }}/projek-uas:latest
+            docker run -d --name projek-uas -p 9080:80 ${{ secrets.DOCKERHUB_USERNAME }}/projek-uas:latest
 
             echo "Deployment complete!"
