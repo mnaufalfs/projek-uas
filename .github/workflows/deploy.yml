@@ -1,0 +1,49 @@
+name: Deploy HTML App to Docker Hub and EC2
+
+on:
+  push:
+    branches:
+      - main # Ganti dengan branch utama Saya jika berbeda (misalnya, master)
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/projek-uas:latest # Ganti your-html-app dengan nama image Saya
+
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          script: |
+            echo "Pulling latest Docker image..."
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/projek-uas:latest
+
+            echo "Stopping existing container (if any)..."
+            docker stop your-html-app-container || true
+            docker rm your-html-app-container || true
+
+            echo "Running new container..."
+            docker run -d --name your-html-app-container -p 80:80 ${{ secrets.DOCKERHUB_USERNAME }}/your-html-app:latest
+
+            echo "Deployment complete!"
