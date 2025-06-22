@@ -46,15 +46,12 @@ jobs:
 
             echo "Running new container..."
             docker run -d --name projek-uas -p 9080:80 ${{ secrets.DOCKERHUB_USERNAME }}/projek-uas:latest
+            mkdir -p ~/.ssh
+            echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+            chmod 600 ~/.ssh/id_rsa
+            rsync -avz --delete -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \ --exclude '.git/' \
+            ./ \
+            ${EC2_USER}@${EC2_HOST}:${TARGET_DIR}
+            ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} "sudo systemctl reload nginx"
 
             echo "Deployment complete!"
-
-      - name: Set up SSH Private Key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          rsync -avz --delete -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \ --exclude '.git/' \
-          ./ \
-          ${EC2_USER}@${EC2_HOST}:${TARGET_DIR}
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} "sudo systemctl reload nginx"
