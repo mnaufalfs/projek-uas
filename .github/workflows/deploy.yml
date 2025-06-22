@@ -28,28 +28,6 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/projek-uas:latest # Ganti your-html-app dengan nama image Saya
-
-      - name: Set up SSH Private Key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-
-      - name: Deploy file menggunakan rsync
-        env:
-          EC2_USER: ${{ secrets.EC2_USER }}
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          TARGET_DIR: /var/www/html/
-        run: |
-            rsync -avz --delete -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \--exclude '.git/' \./ \ 
-            ${EC2_USER}@${EC2_HOST}:${TARGET_DIR}
-
-       - name: Restart Web Server (Opsional)
-        env:
-          EC2_USER: ubuntu
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-        run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} "sudo systemctl reload nginx"
             
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@master
