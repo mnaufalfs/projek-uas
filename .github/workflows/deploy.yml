@@ -57,15 +57,17 @@ jobs:
       - name: Deploy file menggunakan rsync
         env:
           EC2_USER: ${{ secrets.EC2_USER }}
-          EC2_HOST_FILE: ${{ secrets.EC2_HOST_FILE }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
           TARGET_DIR: /var/www/html/
         run: |
             sudo su
-            rsync -avz --delete -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \--exclude '.git/' \./ \ ${EC2_USER}@${EC2_HOST_FILE}:${TARGET_DIR}
+            rsync -avz --delete -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \--exclude '.git/' \
+            ./ \ 
+            ${EC2_USER}@${EC2_HOST}:${TARGET_DIR}
 
       - name: Restart Web Server (Opsional)
         env:
           EC2_USER: ${{ secrets.EC2_USER }}
-          EC2_HOST_FILE: ${{ secrets.EC2_HOST_FILE }}
+          EC2_HOST_FILE: ${{ secrets.EC2_HOST }}
         run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST_FILE} "sudo systemctl reload nginx"
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} "sudo systemctl reload nginx"
