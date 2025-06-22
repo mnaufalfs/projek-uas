@@ -67,7 +67,7 @@ jobs:
 
       - name: Restart Web Server (Opsional)
         env:
-          EC2_USER: ubuntu
-          EC2_HOST: ${{ secrets.EC2_HOST_FILE }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_HOST_FILE: ${{ secrets.EC2_HOST_FILE }}
         run: |
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST_FILE} "sudo systemctl reload nginx"
