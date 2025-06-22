@@ -57,7 +57,7 @@ jobs:
       - name: Deploy file menggunakan rsync
         env:
           EC2_USER: ${{ secrets.EC2_USER }}
-          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_HOST: ${{ secrets.EC2_HOST_FILE }}
           TARGET_DIR: /var/www/html/
         run: |
             sudo su
@@ -68,6 +68,6 @@ jobs:
       - name: Restart Web Server (Opsional)
         env:
           EC2_USER: ubuntu
-          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_HOST: ${{ secrets.EC2_HOST_FILE }}
         run: |
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} "sudo systemctl reload nginx"
